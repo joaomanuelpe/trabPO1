@@ -1,10 +1,36 @@
 package ordenacaolista;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Principal {
     public static void main(String[] args) {
-        try {
+
+        ListaEncadeada lista = new ListaEncadeada(null, null);
+        // Criar uma lista de números de 1 a 1000
+        List<Integer> numeros = new ArrayList<>();
+        Instant ini = Instant.now();
+        for (int i = 1; i <= 50; i++) {
+            numeros.add(i);
+        }
+
+        // Embaralhar os números para ficarem desordenados
+        Collections.shuffle(numeros);
+
+        // Inserir os números na lista personalizada
+        for (int num : numeros) {
+            lista.inserirNoIni(num);
+        }
+
+        lista.exibir();
+        lista.ShakeSort();
+        System.out.println();
+        lista.exibir();
+
+        /*try {
             Arquivo baseArquivo = new Arquivo("dadosBase.bin");
             baseArquivo.geraArquivoRandomico();
 
@@ -58,6 +84,6 @@ public class Principal {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }
