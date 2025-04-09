@@ -380,7 +380,7 @@ public class ListaEncadeada {
             if(flag) {
                 flag = false;
                 for(i = aux2; i != ini; i = i.getAnt()) {
-                    if(i.getNum() > i.getAnt().getNum()) {
+                    if(i.getNum() < i.getAnt().getNum()) {
                         aux = i.getNum();
                         i.setNum(i.getAnt().getNum());
                         i.getAnt().setNum(aux);
