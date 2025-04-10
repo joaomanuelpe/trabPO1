@@ -1,9 +1,4 @@
-package ordenacaolista;
-
-import ordenacaolista.objetos.No;
-import ordenacaolista.objetos.Registro;
-
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -487,9 +482,8 @@ public class Arquivo {
 
     public void merge1Arq() {
 
-        Arquivo arq1 = new Arquivo("arquivo.dat");
-        Arquivo arq2 = new Arquivo("arquivo2.dat");
-
+        Arquivo arq1 = new Arquivo("src/arquivos/arquivo1.dat");
+        Arquivo arq2 = new Arquivo("src/arquivos/arquivo2.dat");
         int seq = 1;
 
         while(seq < filesize()) {
@@ -497,56 +491,98 @@ public class Arquivo {
             fusao(arq1, arq2, seq);
             seq*=2;
         }
+        try {
+            arq1.getFile().close();
+            File file1 = new File("src/arquivos/arquivo1.dat");
+            file1.delete();
+            arq2.getFile().close();
+            file1 = new File("src/arquivos/arquivo2.dat");
+            file1.delete();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
-    public void fusao(int ini1, int fim1, int ini2, int fim2, int aux[], int vet[]) {
+    public void fusaoArquivo(int ini1, int fim1, int ini2, int fim2, Arquivo aux, Arquivo vet) {
         int i = ini1, j = ini2, k = 0;
-
-        while(i <= fim1 && j <= fim2) {
+        Registro regI = new Registro(0), regJ = new Registro(0);
+        while (i <= fim1 && j <= fim2) {
+            vet.seekArq(i); regI.leDoArq(vet.getFile());
+            vet.seekArq(j); regJ.leDoArq(vet.getFile());
             comp++;
-            if(vet[i] < vet[j]) {
-                aux[k++] = vet[i++]; mov++;
+            if (regI.getNumero() < regJ.getNumero()) {
+                aux.seekArq(k++);
+                regI.gravaNoArq(aux.getFile()); mov++;
+                i++;
             } else {
-                aux[k++] = vet[j++]; mov++;
+                aux.seekArq(k++);
+                regJ.gravaNoArq(aux.getFile()); mov++;
+                j++;
             }
         }
-        while(i <= fim1) {
-            aux[k++] = vet[i++]; mov++;
+        while (i <= fim1) {
+            vet.seekArq(i++);
+            regI.leDoArq(vet.getFile());
+            aux.seekArq(k++);
+            regI.gravaNoArq(aux.getFile()); mov++;
         }
-        while(j <= fim2) {
-            aux[k++] = vet[j++]; mov++;
+        while (j <= fim2) {
+            vet.seekArq(j++);
+            regJ.leDoArq(vet.getFile());
+            aux.seekArq(k++);
+            regJ.gravaNoArq(aux.getFile()); mov++;
         }
-        for(i = 0; i < k; i++) {
-            vet[i + ini1] = aux[i]; mov++;
+        for (int l = 0; l < k; l++) {
+            aux.seekArq(l);
+            regI.leDoArq(aux.getFile());
+            vet.seekArq(ini1 + l);
+            regI.gravaNoArq(vet.getFile()); mov++;
         }
     }
 
-    public void merge2Imp(int esq, int dir, int aux[], int vet[]) {
-        if(esq < dir) {
-            int meio = (esq + dir)/2;
-            merge2Imp(esq, meio, aux, vet);
-            merge2Imp(meio + 1, dir, aux, vet);
-            fusao(esq, meio, meio + 1, dir, aux, vet);
+    public void merge2ImpArquivo(int esq, int dir, Arquivo aux, Arquivo vet) {
+        if (esq < dir) {
+            int meio = (esq + dir) / 2;
+            merge2ImpArquivo(esq, meio, aux, vet);
+            merge2ImpArquivo(meio + 1, dir, aux, vet);
+            fusaoArquivo(esq, meio, meio + 1, dir, aux, vet);
         }
     }
 
-    public void mergeSort2Imp() {
-        int aux[] = new int[filesize()], vet[] = new int[filesize()];
+    public void mergeSort2ImpArquivo() {
+        int TL = filesize();
         Registro reg = new Registro(0);
 
-        for (int i = 0; i < filesize(); i++) {
+        Arquivo vet = new Arquivo("src/arquivos/mergeVet.dat");
+        Arquivo aux = new Arquivo("src/arquivos/mergeAux.dat");
+
+        vet.truncate(0);
+        aux.truncate(0);
+        for (int i = 0; i < TL; i++) {
             seekArq(i);
             reg.leDoArq(arquivo);
-            vet[i] = reg.getNumero();
+            vet.seekArq(i);
+            reg.gravaNoArq(vet.getFile());
         }
-
-        merge2Imp(0, filesize() - 1, aux, vet);
-
-        for (int i = 0; i < filesize(); i++) {
+        merge2ImpArquivo(0, TL - 1, aux, vet);
+        for (int i = 0; i < TL; i++) {
+            vet.seekArq(i);
+            reg.leDoArq(vet.getFile());
             seekArq(i);
-            reg.setNumero(vet[i]);
             reg.gravaNoArq(arquivo);
         }
+
+        try {
+            vet.getFile().close();
+            File file1 = new File("src/arquivos/mergeVet.dat");
+            file1.delete();
+            aux.getFile().close();
+            file1 = new File("src/arquivos/mergeAux.dat");
+            file1.delete();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
+
 
     public void countingSort() {
         int TL = filesize();
@@ -661,61 +697,127 @@ public class Arquivo {
         }
     }
 
-    private void timSort(int[] vet, int[] aux, int TL) {
+    public void insertionSortArquivo(int ini, int fim) {
+        Registro atual = new Registro(0);
+        Registro anterior = new Registro(0);
+
+        for (int i = ini + 1; i <= fim; i++) {
+            seekArq(i);
+            atual.leDoArq(arquivo);
+            int chave = atual.getNumero();
+            int j = i - 1;
+
+            while (j >= ini) {
+                seekArq(j);
+                anterior.leDoArq(arquivo);
+                comp++;
+                if (anterior.getNumero() > chave) {
+                    seekArq(j + 1);
+                    anterior.gravaNoArq(arquivo); mov++;
+                    j--;
+                } else {
+                    break;
+                }
+            }
+
+            seekArq(j + 1);
+            atual.setNumero(chave);
+            atual.gravaNoArq(arquivo); mov++;
+        }
+    }
+
+    public void fusaoTimSortArquivo(int ini1, int fim1, int ini2, int fim2, Arquivo aux, Arquivo vet) {
+        int i = ini1, j = ini2, k = 0;
+        Registro regI = new Registro(0), regJ = new Registro(0);
+
+        while (i <= fim1 && j <= fim2) {
+            vet.seekArq(i); regI.leDoArq(vet.getFile());
+            vet.seekArq(j); regJ.leDoArq(vet.getFile());
+            comp++;
+            if (regI.getNumero() < regJ.getNumero()) {
+                aux.seekArq(k++);
+                regI.gravaNoArq(aux.getFile()); mov++;
+                i++;
+            } else {
+                aux.seekArq(k++);
+                regJ.gravaNoArq(aux.getFile()); mov++;
+                j++;
+            }
+        }
+
+        while (i <= fim1) {
+            vet.seekArq(i++);
+            regI.leDoArq(vet.getFile());
+            aux.seekArq(k++);
+            regI.gravaNoArq(aux.getFile()); mov++;
+        }
+
+        while (j <= fim2) {
+            vet.seekArq(j++);
+            regJ.leDoArq(vet.getFile());
+            aux.seekArq(k++);
+            regJ.gravaNoArq(aux.getFile()); mov++;
+        }
+
+        for (int l = 0; l < k; l++) {
+            aux.seekArq(l);
+            regI.leDoArq(aux.getFile());
+            vet.seekArq(ini1 + l);
+            regI.gravaNoArq(vet.getFile()); mov++;
+        }
+    }
+
+
+    public void timSortArquivo() {
+        int TL = filesize();
         int RUN = 32;
+        Registro reg = new Registro(0);
+
+        Arquivo vet = new Arquivo("src/arquivos/timSortVet.dat");
+        Arquivo aux = new Arquivo("src/arquivos/timSortAux.dat");
+
+        vet.truncate(0);
+        aux.truncate(0);
+        for (int i = 0; i < TL; i++) {
+            seekArq(i);
+            reg.leDoArq(arquivo);
+            vet.seekArq(i);
+            reg.gravaNoArq(vet.getFile());
+        }
         for (int i = 0; i < TL; i += RUN) {
             int fim = i + RUN - 1;
             if (fim >= TL) fim = TL - 1;
-            insertionSort(vet, i, fim);
+            vet.insertionSortArquivo(i, fim);
         }
-
         for (int tam = RUN; tam < TL; tam = tam * 2) {
             for (int ini = 0; ini < TL; ini += 2 * tam) {
                 int meio = ini + tam - 1;
                 int fim = ini + 2 * tam - 1;
                 if (fim >= TL) fim = TL - 1;
-                if (meio < fim) {
-                    fusao(ini, meio, meio + 1, fim, aux, vet);
-                }
+                if (meio < fim)
+                    fusaoTimSortArquivo(ini, meio, meio + 1, fim, aux, vet);
             }
         }
-    }
-
-    private void insertionSort(int[] vet, int ini, int fim) {
-        for (int i = ini + 1; i <= fim; i++) {
-            int valor = vet[i];
-            int j = i - 1;
-            while (j >= ini && vet[j] > valor) {
-                comp++;
-                vet[j + 1] = vet[j];
-                mov++;
-                j--;
-            }
-            vet[j + 1] = valor;
-            mov++;
-        }
-    }
-
-    public void timSortArquivo() {
-        int TL = filesize();
-        int[] vet = new int[TL];
-        int[] aux = new int[TL];
-        Registro reg = new Registro(0);
 
         for (int i = 0; i < TL; i++) {
+            vet.seekArq(i);
+            reg.leDoArq(vet.getFile());
             seekArq(i);
-            reg.leDoArq(arquivo);
-            vet[i] = reg.getNumero();
-        }
-
-        timSort(vet, aux, TL);
-
-        for (int i = 0; i < TL; i++) {
-            seekArq(i);
-            reg.setNumero(vet[i]);
             reg.gravaNoArq(arquivo);
         }
+
+        try {
+            aux.getFile().close();
+            File file1 = new File("src/arquivos/timSortAux.dat");
+            file1.delete();
+            aux.getFile().close();
+            file1 = new File("src/arquivos/timSortVet.dat");
+            file1.delete();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
+
 
     public void combSortArquivo() {
         int TL = filesize();
@@ -748,64 +850,73 @@ public class Arquivo {
         }
     }
 
+    public void fecharBaldes(Arquivo[] baldes, int nBaldes) {
+        try {
+            for (int i = 0; i < nBaldes; i++) {
+                baldes[i].getFile().close();
+                File file = new File("src/arquivos/bucket" + i + ".dat");
+                file.delete();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void bucketSortArquivo() {
         int TL = filesize();
         Registro reg = new Registro(0);
-        No[] buckets = new No[10];
+        int max = 0;
+        for (int i = 0; i < TL; i++) {
+            seekArq(i);
+            reg.leDoArq(arquivo);
+            if (reg.getNumero() > max)
+                max = reg.getNumero();
+        }
 
+        int qtdBuckets = (int) Math.sqrt(TL);
+        if (qtdBuckets == 0) qtdBuckets = 1;
+
+        int range = (max + 1);
+        int intervalo = (int) Math.ceil((double) range / qtdBuckets);
+
+        Arquivo[] buckets = new Arquivo[qtdBuckets];
+        for (int i = 0; i < qtdBuckets; i++) {
+            buckets[i] = new Arquivo("src/arquivos/bucket" + i + ".dat");
+            buckets[i].truncate(0);
+        }
         for (int i = 0; i < TL; i++) {
             seekArq(i);
             reg.leDoArq(arquivo);
             int valor = reg.getNumero();
-            int indice = valor / 10;
-
-            No novo = new No(valor);
-            if (buckets[indice] == null) {
-                buckets[indice] = novo;
-            } else {
-                No aux = buckets[indice];
-                while (aux.getProx() != null)
-                    aux = aux.getProx();
-                aux.setProx(novo);
-                novo.setAnt(aux);
-            }
+            int indice = valor / intervalo;
+            if (indice >= qtdBuckets) indice = qtdBuckets - 1;
+            buckets[indice].seekArq(buckets[indice].filesize());
+            reg.gravaNoArq(buckets[indice].getFile());
+            mov++;
         }
-        for (int b = 0; b < 10; b++) {
-            No i = buckets[b];
-            if (i == null) continue;
-
-            No atual = i.getProx();
-            while (atual != null) {
-                int chave = atual.getNum();
-                No anterior = atual.getAnt();
-
-                while (anterior != null && anterior.getNum() > chave) {
-                    comp++;
-                    anterior.getProx().setNum(anterior.getNum()); mov++;
-                    anterior = anterior.getAnt();
-                }
-
-                if (anterior == null) {
-                    i.setNum(chave); mov++;
-                } else {
-                    comp++;
-                    anterior.getProx().setNum(chave); mov++;
-                }
-
-                atual = atual.getProx();
-            }
+        for (int i = 0; i < qtdBuckets; i++) {
+            buckets[i].initComp();
+            buckets[i].initMov();
+            buckets[i].insertionSortArquivo();
+            comp += buckets[i].getComp();
+            mov += buckets[i].getMov();
         }
         int pos = 0;
-        for (int b = 0; b < 10; b++) {
-            No aux = buckets[b];
-            while (aux != null) {
+        for (int i = 0; i < qtdBuckets; i++) {
+            int tam = buckets[i].filesize();
+            for (int j = 0; j < tam; j++) {
+                buckets[i].seekArq(j);
+                reg.leDoArq(buckets[i].getFile());
                 seekArq(pos++);
-                reg.setNumero(aux.getNum());
-                reg.gravaNoArq(arquivo); mov++;
-                aux = aux.getProx();
+                reg.gravaNoArq(arquivo);
+                mov++;
             }
         }
+        fecharBaldes(buckets, qtdBuckets);
     }
+
+
+
 
     public void heapSortArquivo() {
         int pai, TL2 = filesize(), FE, FD, maiorF;
@@ -857,7 +968,7 @@ public class Arquivo {
     public void geraArquivoOrdenado() {
         try {
             truncate(0);
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 128; i++) {
                 Registro r = new Registro(i);
                 r.gravaNoArq(arquivo);
             }
@@ -869,7 +980,7 @@ public class Arquivo {
     public void geraArquivoReverso() {
         try {
             truncate(0);
-            for (int i = 99; i >= 0; i--) {
+            for (int i = 128; i > 0; i--) {
                 Registro r = new Registro(i);
                 r.gravaNoArq(arquivo);
             }
@@ -882,12 +993,13 @@ public class Arquivo {
         try {
             truncate(0);
             java.util.Random rand = new java.util.Random();
-            for (int i = 0; i < 100; i++) {
-                Registro r = new Registro(rand.nextInt(100));
+            for (int i = 0; i < 128; i++) {
+                Registro r = new Registro(rand.nextInt(1024));
                 r.gravaNoArq(arquivo);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 }

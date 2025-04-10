@@ -1,5 +1,3 @@
-package ordenacaolista.objetos;
-
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
