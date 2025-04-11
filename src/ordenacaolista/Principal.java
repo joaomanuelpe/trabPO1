@@ -13,7 +13,7 @@ public class Principal {
         // Criar uma lista de números de 1 a 1000
         List<Integer> numeros = new ArrayList<>();
         Instant ini = Instant.now();
-        for (int i = 1; i <= 50; i++) {
+        for (int i = 1; i <= 700; i++) {
             numeros.add(i);
         }
 
@@ -26,7 +26,8 @@ public class Principal {
         }
 
         lista.exibir();
-        lista.ShakeSort();
+        lista.combSort();
+        System.out.println();
         System.out.println();
         lista.exibir();
 

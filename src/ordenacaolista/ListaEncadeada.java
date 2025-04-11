@@ -109,14 +109,14 @@ public class ListaEncadeada {
 
     }
 
-    public void insertionSort(){
+    public void insertionSort(No ini, No fim){
         int num;
-        No auxi = inicio, posmenor, auxj;
+        No auxi = ini, posmenor, auxj, auxf = fim;
 
-        while(auxi.getProx() != null) {
+        while(auxi.getProx() != auxf.getProx()) {
             posmenor = auxi;
             auxj = auxi.getProx();
-            while(auxj != null) {
+            while(auxj != auxf.getProx()) {
                 if(auxj.getNum() < posmenor.getNum())
                     posmenor = auxj;
                 auxj = auxj.getProx();
@@ -254,6 +254,42 @@ public class ListaEncadeada {
         No aux = null;
         merge(inicio, fim, aux);
     }
+
+    public void timSort() {
+        int RUN = 32;
+        int TL = geraTL();
+        No aux = null;
+        No ini1, fim1;
+        for (int i = 0; i < TL; i++) {
+            int fim = i + RUN;
+            if(fim>=TL)
+                fim = TL;
+            ini1 = pegaNo(i);
+            fim1 = pegaNo(fim);
+            insertionSort(ini1, fim1);
+        }
+
+        for (int tam = RUN; tam < TL; tam =  tam * 2) {
+            for (int ini = 0; ini < TL; ini += 2 * tam) {
+                No ini2 = pegaNo(ini);
+                int meio = ini + tam;
+                No fim;
+                int fimI = ini + 2 * tam;
+                if(fimI >= TL) {
+                    fim = pegaNo(TL);
+                    meio = (ini+TL)/2;
+                }
+                else
+                    fim = pegaNo(fimI);
+                if(meio < fimI) {
+                    No meio2 = pegaNo(meio);
+                    fusao(ini2, meio2, meio2.getProx(), fim, aux);
+                }
+            }
+        }
+    }
+
+
 
     public int geraTL() {
         No aux = inicio;
@@ -408,6 +444,29 @@ public class ListaEncadeada {
             posM.setNum(aux);
             i = i.getProx();
             j = i.getProx();
+        }
+    }
+
+    public void combSort() {
+        int TL = geraTL();
+        int gap = TL, aux;
+        No aux1, aux2;
+        boolean flag = true;
+        while(gap>1 || flag) {
+            if(gap > 1) {
+                gap = (gap*10) / 13;
+            }
+            flag = false;
+            for (int i = 1; i + gap <= TL; i++) {
+                aux1 = pegaNo(i);
+                aux2 = pegaNo(i+gap);
+                if(aux1.getNum() > aux2.getNum()) {
+                    aux = aux1.getNum();
+                    aux1.setNum(aux2.getNum());
+                    aux2.setNum(aux);
+                    flag = true;
+                }
+            }
         }
     }
 

@@ -16,7 +16,7 @@ public class MainInsertionSort {
         System.out.println("---LISTA ANTES DO INSERTION SORT---");
         lista.imprimeLista();
         System.out.println("\n---LISTA APÓS O INSERTION SORT---");
-        lista.insertionSort();
+        // lista.insertionSort();
         lista.imprimeLista();
     }
 }
