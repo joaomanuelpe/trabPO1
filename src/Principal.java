@@ -33,7 +33,7 @@ public class Principal {
 
                     switch (metodo) {
                         case "InserçãoDireta" -> {
-                            arq.bolhaArquivo();
+                            arq.insertionSortArquivo();
                             if(i == 0) {
                                 compEq = arq.getComp() - 1;
                                 movEq = 3*(arq.getMov()-1);
@@ -47,7 +47,7 @@ public class Principal {
 
                         }
                         case "InsercaoBinaria" -> {
-                            arq.shakeArquivo();
+                            arq.insercaoBinariaArq();
                             compEq = (long)(arq.getComp() * (Math.log(arq.getComp()) - Math.log(2.71828) + 0.5));
                             if(i == 0) {
                                 movEq = 3*(arq.getMov()-1);
@@ -69,7 +69,7 @@ public class Principal {
                             }
                         }
                         case "Bolha" -> {
-                            arq.insertionSortArquivo();
+                            arq.bolhaArquivo();
                             compEq =  (long)((Math.pow(arq.getComp(),2) - arq.getComp())/2);
                             if(i == 0) {
                                 movEq = 0;
@@ -80,7 +80,7 @@ public class Principal {
                             }
                         }
                         case "Shake" -> {
-                            arq.shellArquivo();
+                            arq.shakeArquivo();
                             compEq =  (long)((Math.pow(arq.getComp(),2) - arq.getComp())/2);
                             if(i == 0) {
                                 movEq = 0;
@@ -91,40 +91,40 @@ public class Principal {
                             }
                         }
                         case "Shell" -> {
-                            arq.QuickSemPivoArq();
+                            arq.shellArquivo();
                             compEq = -1; movEq = -1;
                         }
                         case "Heap" -> {
-                            arq.QuickComPivoArquivo();
+                            arq.heapSortArquivo();
                             compEq = -1; movEq = -1;
                         }
                         case "QuickSemPivo" -> {
-                            arq.insercaoBinariaArq();
+                            arq.QuickSemPivoArq();
                             compEq = -1; movEq = -1;
 
                         }
                         case "QuickComPivo" -> {
-                            arq.merge1Arq();
+                            arq.QuickComPivoArquivo();
                             compEq = -1; movEq = -1;
                         }
                         case "Merge1" -> {
-                            arq.mergeSort2ImpArquivo();
+                            arq.merge1Arq();
                             compEq = -1; movEq = -1;
                         }
                         case "Merge2" -> {
-                            arq.countingSort();
+                            arq.mergeSort2ImpArquivo();
                             compEq = -1; movEq = -1;
                         }
                         case "Counting" -> {
-                            arq.radixSort();
+                            arq.countingSort();
                             compEq = -1; movEq = -1;
                         }
                         case "Bucket" -> {
-                            arq.gnomeSortArquivo();
+                            arq.bucketSortArquivo();
                             compEq = -1; movEq = -1;
                         }
                         case "Radix" -> {
-                            arq.timSortArquivo();
+                            arq.radixSort();
                             compEq = -1; movEq = -1;
                         }
                         case "Comb" -> {
@@ -132,11 +132,11 @@ public class Principal {
                             compEq = -1; movEq = -1;
                         }
                         case "Gnome" -> {
-                            arq.bucketSortArquivo();
+                            arq.gnomeSortArquivo();
                             compEq = -1; movEq = -1;
                         }
                         case "Tim" -> {
-                            arq.heapSortArquivo();
+                            arq.timSortArquivo();
                             compEq = -1; movEq = -1;
                         }
                     }

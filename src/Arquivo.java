@@ -200,14 +200,14 @@ public class Arquivo {
                 if (j >= 0) {
                     seekArq(j);
                     anterior.leDoArq(arquivo);
+                    }
                 }
+                comp++;
+                seekArq(j + 1);
+                atual.setNumero(chave);
+                atual.gravaNoArq(arquivo); mov++;
             }
-            comp++;
-            seekArq(j + 1);
-            atual.setNumero(chave);
-            atual.gravaNoArq(arquivo); mov++;
         }
-    }
 
     public void bolhaArquivo() {
         boolean flag = false;
@@ -705,16 +705,18 @@ public class Arquivo {
             int chave = atual.getNumero();
             int j = i - 1;
 
-            while (j >= ini) {
-                seekArq(j);
-                anterior.leDoArq(arquivo);
-                comp++;
-                if (anterior.getNumero() > chave) {
-                    seekArq(j + 1);
-                    anterior.gravaNoArq(arquivo); mov++;
-                    j--;
-                } else {
-                    break;
+            // Enquanto j for válido e anterior.getNumero() > chave
+            seekArq(j);
+            anterior.leDoArq(arquivo);
+            comp++;
+            while (j >= ini && anterior.getNumero() > chave) {
+                seekArq(j + 1);
+                anterior.gravaNoArq(arquivo); mov++;
+                j--;
+                if (j >= ini) {
+                    seekArq(j);
+                    anterior.leDoArq(arquivo);
+                    comp++;
                 }
             }
 
@@ -966,7 +968,7 @@ public class Arquivo {
     public void geraArquivoOrdenado() {
         try {
             truncate(0);
-            for (int i = 0; i < 64; i++) {
+            for (int i = 0; i < 8; i++) {
                 Registro r = new Registro(i);
                 r.gravaNoArq(arquivo);
             }
