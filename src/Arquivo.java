@@ -190,21 +190,19 @@ public class Arquivo {
             atual.leDoArq(arquivo);
             int chave = atual.getNumero();
             int j = i - 1;
-            boolean parar = false;
-
-            while (j >= 0 && !parar) {
-                seekArq(j);
-                anterior.leDoArq(arquivo);
+            seekArq(j);
+            anterior.leDoArq(arquivo);
+            while (j >= 0 && anterior.getNumero() > chave) {
                 comp++;
-                if (anterior.getNumero() > chave) {
-                    seekArq(j + 1);
-                    anterior.gravaNoArq(arquivo); mov++;
-                    j--;
-                } else {
-                    parar = true;
+                seekArq(j + 1);
+                anterior.gravaNoArq(arquivo); mov++;
+                j--;
+                if (j >= 0) {
+                    seekArq(j);
+                    anterior.leDoArq(arquivo);
                 }
             }
-
+            comp++;
             seekArq(j + 1);
             atual.setNumero(chave);
             atual.gravaNoArq(arquivo); mov++;
@@ -968,7 +966,7 @@ public class Arquivo {
     public void geraArquivoOrdenado() {
         try {
             truncate(0);
-            for (int i = 0; i < 128; i++) {
+            for (int i = 0; i < 64; i++) {
                 Registro r = new Registro(i);
                 r.gravaNoArq(arquivo);
             }
@@ -980,7 +978,7 @@ public class Arquivo {
     public void geraArquivoReverso() {
         try {
             truncate(0);
-            for (int i = 128; i > 0; i--) {
+            for (int i = 64; i > 0; i--) {
                 Registro r = new Registro(i);
                 r.gravaNoArq(arquivo);
             }
@@ -993,7 +991,7 @@ public class Arquivo {
         try {
             truncate(0);
             java.util.Random rand = new java.util.Random();
-            for (int i = 0; i < 128; i++) {
+            for (int i = 0; i < 64; i++) {
                 Registro r = new Registro(rand.nextInt(1024));
                 r.gravaNoArq(arquivo);
             }

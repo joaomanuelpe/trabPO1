@@ -4,6 +4,12 @@ public class No {
     private int num;
     private No prox, ant;
 
+    public No(int num, No prox, No ant) {
+        this.num = num;
+        this.prox = prox;
+        this.ant = ant;
+    }
+
     public No(int num) {
         this.num = num;
         this.prox = null;

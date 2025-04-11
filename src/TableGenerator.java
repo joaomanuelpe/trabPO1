@@ -16,12 +16,12 @@ public class TableGenerator {
 
     private void writeHeader() {
         String header =
-                "+=====================+===========================================+===========================================+===========================================+\n" +
-                        "║  Métodos Ordenação    ║           Arquivo Ordenado                ║       Arquivo em Ordem Reversa            ║           Arquivo Randômico               ║\n" +
-                        "+=====================+===========================================+===========================================+===========================================+\n" +
-                        "║                     ║ Comp. │ Comp. │ Mov.  │ Mov.  │ Tempo   ║ Comp. │ Comp. │ Mov.  │ Mov.  │ Tempo   ║ Comp. │ Comp. │ Mov.  │ Mov.  │ Tempo   ║\n" +
-                        "║                     ║ Prog. │ Equa. │ Prog. │ Equa. │ (Seg)   ║ Prog. │ Equa. │ Prog. │ Equa. │ (Seg)   ║ Prog. │ Equa. │ Prog. │ Equa. │ (Seg)   ║\n" +
-                        "+=====================+===========================================+===========================================+===========================================+\n";
+                "+=======================+================================================+================================================+================================================+\n" +
+                        "║    Métodos Ordenação  ║              Arquivo Ordenado                  ║         Arquivo em Ordem Reversa               ║            Arquivo Randômico                   ║\n" +
+                        "+=======================+================================================+================================================+================================================+\n" +
+                        "║                       ║  Comp. \u0002   Comp. \u0002    Mov.  \u0002  Mov.  \u0002   Tempo  ║  Comp. \u0002    Comp. \u0002  Mov.  \u0002    Mov.  \u0002  Tempo  ║  Comp. \u0002    Comp. \u0002  Mov.  \u0002   Mov.  \u0002   Tempo  ║\n" +
+                        "║                       ║  Prog. \u0002   Equa. \u0002    Prog. \u0002  Equa. \u0002   (Seg)  ║  Prog. \u0002    Equa. \u0002  Prog. \u0002    Equa. \u0002  (Seg)  ║  Prog. \u0002    Equa. \u0002  Prog. \u0002   Equa. \u0002   (Seg)  ║\n" +
+                        "+=======================+================================================+================================================+================================================+\n";
         writeToFile(header);
     }
 
@@ -34,6 +34,9 @@ public class TableGenerator {
     }
 
     private String centerText(String text, int width) {
+        if (text.length() >= width) {
+            return text.substring(0, width);
+        }
         int padding = width - text.length();
         int leftPad = padding / 2;
         int rightPad = padding - leftPad;
@@ -41,21 +44,22 @@ public class TableGenerator {
     }
 
     public void writeMethodName(String name) {
-        String centered = centerText(name, 19);
+        String centered = centerText(name, 21); // Increased width to 21
         writeToFile("║" + centered + "  ║");
     }
 
     private String centerNumber(int num, int width) {
-        return centerText(String.valueOf(num), width);
+        String numStr = String.valueOf(num);
+        return centerText(numStr, width);
     }
 
     public void writeTableRow(int comp, int compCalc, int mov, int movCalc, int time, boolean isLastColumn) {
         StringBuilder row = new StringBuilder();
-        row.append(centerNumber(comp, 7)).append(" │");
-        row.append(centerNumber(compCalc, 7)).append(" │");
-        row.append(centerNumber(mov, 7)).append(" │");
-        row.append(centerNumber(movCalc, 7)).append("  │");
-        row.append(centerNumber(time, 8)).append("║");
+        row.append(" ").append(centerNumber(comp, 7)).append(" │");
+        row.append(" ").append(centerNumber(compCalc, 7)).append(" │");
+        row.append(" ").append(centerNumber(mov, 7)).append(" │");
+        row.append(" ").append(centerNumber(movCalc, 7)).append(" │");
+        row.append(" ").append(centerNumber(time, 7)).append(" ║");
 
         writeToFile(row.toString());
 
@@ -66,7 +70,7 @@ public class TableGenerator {
     }
 
     private void writeDividerLine() {
-        String line = "+=====================+===========================================+===========================================+===========================================+\n";
+        String line = "+=======================+================================================+================================================+================================================+\n";
         writeToFile(line);
     }
 
