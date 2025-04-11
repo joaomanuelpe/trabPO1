@@ -1,20 +1,20 @@
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-public class TableGenerator {
+public class TabelaArquivo {
     private RandomAccessFile file;
 
-    public TableGenerator() {
+    public TabelaArquivo() {
         try {
             file = new RandomAccessFile("src/arquivos/TabelaOrdenacao.txt", "rw");
             file.setLength(0); // Clear file contents
-            writeHeader();
+            criarCabecalho();
         } catch (IOException e) {
-            throw new RuntimeException("Error creating file", e);
+            throw new RuntimeException("Erro ao criar arquivo", e);
         }
     }
 
-    private void writeHeader() {
+    private void criarCabecalho() {
         String header =
                 "+=======================+================================================+================================================+================================================+\n" +
                         "║    Métodos Ordenação  ║              Arquivo Ordenado                  ║         Arquivo em Ordem Reversa               ║            Arquivo Randômico                   ║\n" +
@@ -22,18 +22,18 @@ public class TableGenerator {
                         "║                       ║  Comp. \u0002   Comp. \u0002    Mov.  \u0002  Mov.  \u0002   Tempo  ║  Comp. \u0002    Comp. \u0002  Mov.  \u0002    Mov.  \u0002  Tempo  ║  Comp. \u0002    Comp. \u0002  Mov.  \u0002   Mov.  \u0002   Tempo  ║\n" +
                         "║                       ║  Prog. \u0002   Equa. \u0002    Prog. \u0002  Equa. \u0002   (Seg)  ║  Prog. \u0002    Equa. \u0002  Prog. \u0002    Equa. \u0002  (Seg)  ║  Prog. \u0002    Equa. \u0002  Prog. \u0002   Equa. \u0002   (Seg)  ║\n" +
                         "+=======================+================================================+================================================+================================================+\n";
-        writeToFile(header);
+        escreverNoArquivo(header);
     }
 
-    private void writeToFile(String content) {
+    private void escreverNoArquivo(String content) {
         try {
             file.writeBytes(content);
         } catch (IOException e) {
-            throw new RuntimeException("Error writing to file", e);
+            throw new RuntimeException("Erro ao escrever no arquivo", e);
         }
     }
 
-    private String centerText(String text, int width) {
+    private String centralizaTexto(String text, int width) {
         if (text.length() >= width) {
             return text.substring(0, width);
         }
@@ -43,66 +43,34 @@ public class TableGenerator {
         return " ".repeat(leftPad) + text + " ".repeat(rightPad);
     }
 
-    public void writeMethodName(String name) {
-        String centered = centerText(name, 21); // Increased width to 21
-        writeToFile("║" + centered + "  ║");
+    public void escreveNomeMetodo(String name) {
+        String centered = centralizaTexto(name, 21); // Increased width to 21
+        escreverNoArquivo("║" + centered + "  ║");
     }
 
-    private String centerNumber(int num, int width) {
+    private String centralizaNumero(int num, int width) {
         String numStr = String.valueOf(num);
-        return centerText(numStr, width);
+        return centralizaTexto(numStr, width);
     }
 
-    public void writeTableRow(int comp, int compCalc, int mov, int movCalc, int time, boolean isLastColumn) {
+    public void escreverLinhaTabela(int comp, int compCalc, int mov, int movCalc, int time, boolean isLastColumn) {
         StringBuilder row = new StringBuilder();
-        row.append(" ").append(centerNumber(comp, 7)).append(" │");
-        row.append(" ").append(centerNumber(compCalc, 7)).append(" │");
-        row.append(" ").append(centerNumber(mov, 7)).append(" │");
-        row.append(" ").append(centerNumber(movCalc, 7)).append(" │");
-        row.append(" ").append(centerNumber(time, 7)).append(" ║");
+        row.append(" ").append(centralizaNumero(comp, 7)).append(" │");
+        row.append(" ").append(centralizaNumero(compCalc, 7)).append(" │");
+        row.append(" ").append(centralizaNumero(mov, 7)).append(" │");
+        row.append(" ").append(centralizaNumero(movCalc, 7)).append(" │");
+        row.append(" ").append(centralizaNumero(time, 7)).append(" ║");
 
-        writeToFile(row.toString());
+        escreverNoArquivo(row.toString());
 
         if (isLastColumn) {
-            writeToFile("\n");
-            writeDividerLine();
+            escreverNoArquivo("\n");
+            escreverLinhaDivisória();
         }
     }
 
-    private void writeDividerLine() {
+    private void escreverLinhaDivisória() {
         String line = "+=======================+================================================+================================================+================================================+\n";
-        writeToFile(line);
-    }
-
-    public static void main(String[] args) {
-        TableGenerator table = new TableGenerator();
-        String[] methods = {
-                "Inserção Direta",
-                "Inserção Binária",
-                "Seleção",
-                "Bolha",
-                "Shake",
-                "Shell",
-                "Heap",
-                "Quick s/ pivô",
-                "Quick c/ pivô",
-                "Merge 1ª Implement",
-                "Merge 2ª Implement",
-                "Counting",
-                "Bucket",
-                "Radix",
-                "Comb",
-                "Gnome",
-                "Tim"
-        };
-
-        for (String method : methods) {
-            table.writeMethodName(method);
-            table.writeTableRow(0, 0, 0, 0, 0, false);
-            table.writeTableRow(0, 0, 0, 0, 0, false);
-            table.writeTableRow(0, 0, 0, 0, 0, true);
-        }
-
-        System.out.println("Table has been generated in archive.txt");
+        escreverNoArquivo(line);
     }
 }

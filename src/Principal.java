@@ -14,10 +14,10 @@ public class Principal {
                     "Counting", "Bucket", "Radix", "Comb", "Gnome", "Tim"
             };
 
-            TableGenerator table = new TableGenerator();
+            TabelaArquivo table = new TabelaArquivo();
             long compEq = -1, movEq = -1;
             for (String metodo : metodos) {
-                table.writeMethodName(metodo);
+                table.escreveNomeMetodo(metodo);
 
                 // Process for each type of file (ordered, reverse, random)
                 Arquivo[] arquivos = {ordArquivo, reverseArquivo, aleatorioArquivo};
@@ -142,7 +142,7 @@ public class Principal {
                     }
                     long fim = System.currentTimeMillis();
                     int tempo = (int)(fim - inicio);
-                    table.writeTableRow(
+                    table.escreverLinhaTabela(
                             arq.getComp(),  // Comparações programadas
                             (int)compEq,              // Comparações equação (placeholder)
                             arq.getMov(),   // Movimentações programadas
